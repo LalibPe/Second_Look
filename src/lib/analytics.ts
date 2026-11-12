@@ -1,5 +1,5 @@
 import {
-  CONFIG, OBSERVATIONS, PLAYERS, SESSIONS, SKILL_KEYS,
+  CONFIG, HISTORY, OBSERVATIONS, PLAYERS, SESSIONS, SKILL_KEYS,
   type CoachLog, type ObservationEntry, type PlanDrill, type Player, type Quarter,
   type SessionEvent, type SessionType, type SkillKey, type SkillStat,
 } from "./data";
@@ -72,6 +72,11 @@ export function primarySkill(playerId: string, logs: CoachLog[] = []): SkillKey 
   return best;
 }
 
+/** Keep points on or after the cutoff (YYYY-MM-DD). */
+export function sinceDate(points: ChartPoint[], cutoff: string): ChartPoint[] {
+  return points.filter((p) => p.date >= cutoff);
+}
+
 export interface ChartPoint {
   date: string;
   value: number | null; // success rate %, or 1–5 assessment
@@ -81,7 +86,7 @@ export interface ChartPoint {
 }
 
 /** Per-date success-rate series for one skill, combining measured observations and coach logs. */
-export function skillSeries(playerId: string, skill: SkillKey, logs: CoachLog[] = []): ChartPoint[] {
+export function skillSeries(playerId: string, skill: SkillKey, logs: CoachLog[] = [], includeHistory = false): ChartPoint[] {
   const byDate = new Map<string, SkillStat>();
   const add = (date: string, s?: SkillStat) => {
     if (!s) return;
@@ -92,6 +97,7 @@ export function skillSeries(playerId: string, skill: SkillKey, logs: CoachLog[] 
   };
   for (const o of OBSERVATIONS) if (o.playerId === playerId) add(o.date, o.skills[skill]);
   for (const l of logs) if (l.playerId === playerId) add(l.date, l.skills[skill]);
+  if (includeHistory) for (const h of HISTORY) if (h.playerId === playerId) add(h.date, h.skills[skill]);
   return [...byDate.entries()]
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([date, s]) => ({

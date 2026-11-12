@@ -1,20 +1,28 @@
 import { useMemo, useState } from "react";
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { assessmentLabel, assessmentSeries, formatDate, skillSeries, skillTotals, type ChartPoint } from "@/lib/analytics";
+import { assessmentLabel, assessmentSeries, formatDate, sinceDate, skillSeries, skillTotals, type ChartPoint } from "@/lib/analytics";
 import { CONFIG, SKILL_KEYS, type CoachLog, type SkillKey } from "@/lib/data";
 
 type Metric = SkillKey | "assessment";
+type Range = "month" | "tryouts" | "year";
 
 export function SkillChart({
   playerId, logs, highlightDate,
 }: { playerId: string; logs: CoachLog[]; highlightDate: string | null }) {
   const [metric, setMetric] = useState<Metric>("serveReceive");
+  const [range, setRange] = useState<Range>("tryouts");
 
-  const data: ChartPoint[] = useMemo(
-    () => (metric === "assessment" ? assessmentSeries(playerId, logs) : skillSeries(playerId, skillOr(metric), logs)),
-    [playerId, metric, logs],
-  );
+  const data: ChartPoint[] = useMemo(() => {
+    const all = metric === "assessment"
+      ? assessmentSeries(playerId, logs)
+      : skillSeries(playerId, skillOr(metric), logs, range === "year");
+    const now = new Date();
+    const iso = (d: Date) => d.toISOString().slice(0, 10);
+    if (range === "month") return sinceDate(all, iso(new Date(now.getFullYear(), now.getMonth(), 1, 12)));
+    if (range === "year") return sinceDate(all, iso(new Date(now.getFullYear() - 1, now.getMonth(), now.getDate(), 12)));
+    return all;
+  }, [playerId, metric, logs, range]);
 
   const summary = (() => {
     if (metric === "assessment") {
@@ -54,6 +62,15 @@ export function SkillChart({
     <section className="rounded-md border border-border bg-card p-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h3 className="font-display text-lg font-semibold uppercase tracking-wide">Progress</h3>
+        <div className="flex flex-wrap gap-2">
+        <Select value={range} onValueChange={(v) => setRange(v as Range)}>
+          <SelectTrigger className="w-40" aria-label="Chart time range"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="month">This month</SelectItem>
+            <SelectItem value="tryouts">Tryout period</SelectItem>
+            <SelectItem value="year">Last 12 months</SelectItem>
+          </SelectContent>
+        </Select>
         <Select value={metric} onValueChange={(v) => setMetric(v as Metric)}>
           <SelectTrigger className="w-60" aria-label="Chart metric"><SelectValue /></SelectTrigger>
           <SelectContent>
@@ -63,13 +80,17 @@ export function SkillChart({
             <SelectItem value="assessment">Coach assessment (1–5)</SelectItem>
           </SelectContent>
         </Select>
+        </div>
       </div>
       <p className="mt-1 text-sm text-muted-foreground" data-testid="chart-summary">{summary}</p>
+      {range === "year" && metric !== "assessment" && (
+        <p className="mt-1 text-xs text-muted-foreground">Includes last season's practice history (sample data) — shown here only, not used for second-look suggestions.</p>
+      )}
       <div className="mt-3 h-60">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data}>
             <CartesianGrid stroke="var(--color-border)" vertical={false} />
-            <XAxis dataKey="date" tickFormatter={(d: string) => formatDate(d)} {...axis} />
+            <XAxis dataKey="date" minTickGap={24} tickFormatter={(d: string) => formatDate(d)} {...axis} />
             {metric === "assessment" ? (
               <YAxis
                 domain={[0.5, 5.5]} ticks={[1, 2, 3, 4, 5]} width={120} {...axis}
@@ -85,7 +106,7 @@ export function SkillChart({
                 const on = props.payload.date === highlightDate;
                 if (props.cx == null || props.cy == null || props.payload.value === null) return <g key={props.index} />;
                 return (
-                  <circle key={props.index} cx={props.cx} cy={props.cy} r={on ? 8 : 5}
+                  <circle key={props.index} cx={props.cx} cy={props.cy} r={on ? 8 : range === "year" ? 3 : 5}
                     fill={on ? hi : color} stroke="var(--color-card)" strokeWidth={2} />
                 );
               }}

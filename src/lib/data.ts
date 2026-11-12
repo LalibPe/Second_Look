@@ -81,3 +81,8 @@ export const SEED_DRILLS: PlanDrill[] = drillsJson.drills as PlanDrill[];
 /** Synthetic attendance: dates each player was present at a session (no stats). */
 export const ATTENDANCE: Record<string, string[]> = attendanceJson.attendance as Record<string, string[]>;
 export const SKILL_KEYS = Object.keys(CONFIG.skills) as SkillKey[];
+
+import historyJson from "@/data/history.json";
+/** Synthetic previous-season history — progress chart only, never part of the second-look rule. */
+export const HISTORY: { playerId: string; date: string; skills: Partial<Record<SkillKey, SkillStat>> }[] =
+  historyJson.history as never;
