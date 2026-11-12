@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { nextDayIso, todayIso, type ScheduleException } from "./analytics";
 import { CONFIG, SEED_DRILLS, type CoachLog, type PlanDrill } from "./data";
 
-const KEY = "second-look-vb:v1";
+const KEY = "second-look-vb:v2";
 
 export interface AppState {
   /** Manual "Coach flagged" marks — independent of the calculated suggestion and the plan. */

@@ -21,7 +21,7 @@
     "4": "Above expectations",
     "5": "Consistently strong"
   },
-  "defaultPracticeDays": [1, 4],
+  "defaultPracticeDays": [1, 3, 5, 0],
   "demoCalendarStart": "2026-11",
   "secondLookThresholdPct": 75,
   "roleSkills": {
