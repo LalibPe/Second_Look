@@ -3,6 +3,7 @@ import sessionsJson from "@/data/sessions.json";
 import observationsJson from "@/data/observations.json";
 import drillsJson from "@/data/scheduled_drills.json";
 import configJson from "@/data/app_config.json";
+import attendanceJson from "@/data/attendance.json";
 
 export type SkillKey = "serveReceive" | "attack" | "block" | "serve";
 export type SessionType = "practice" | "game" | "tournament";
@@ -77,4 +78,6 @@ export const PLAYERS: Player[] = playersJson.players;
 export const SESSIONS: SessionEvent[] = sessionsJson.sessions as SessionEvent[];
 export const OBSERVATIONS: ObservationEntry[] = observationsJson.observations as ObservationEntry[];
 export const SEED_DRILLS: PlanDrill[] = drillsJson.drills as PlanDrill[];
+/** Synthetic attendance: dates each player was present at a session (no stats). */
+export const ATTENDANCE: Record<string, string[]> = attendanceJson.attendance as Record<string, string[]>;
 export const SKILL_KEYS = Object.keys(CONFIG.skills) as SkillKey[];

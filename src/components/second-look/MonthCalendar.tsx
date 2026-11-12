@@ -10,6 +10,7 @@ const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 export interface CalendarDayInfo {
   events: ScheduleEvent[]; // scheduled sessions that day (may be empty)
   hasPlayerActivity: boolean; // player has a saved log or measured observation that day
+  attended?: boolean; // player was present at a session that day
 }
 
 interface Props {
@@ -62,7 +63,7 @@ export function MonthCalendar({ startMonth, infoFor, selected, onSelect, renderD
             renderDayLabel?.(date) ??
             `${formatDate(date, { weekday: "long", month: "long", day: "numeric" })}` +
               (active.length ? ` · ${active.map((e) => CONFIG.sessionTypes[e.type]).join(", ")}` : " · nothing scheduled") +
-              (info.hasPlayerActivity ? " · has logged activity" : "");
+              (info.hasPlayerActivity ? " · has logged activity" : info.attended ? " · attended" : "");
           return (
             <button
               key={date}
@@ -72,7 +73,9 @@ export function MonthCalendar({ startMonth, infoFor, selected, onSelect, renderD
                 "relative flex aspect-square flex-col items-center justify-center rounded-sm border text-sm tabular transition-colors",
                 info.hasPlayerActivity
                   ? "border-primary bg-primary text-primary-foreground"
-                  : isGame
+                  : info.attended
+                    ? "border-primary/70 bg-primary/35 text-foreground"
+                    : isGame
                     ? "border-primary bg-accent text-accent-foreground"
                     : isPractice
                       ? "border-primary/60 bg-card"
@@ -89,6 +92,7 @@ export function MonthCalendar({ startMonth, infoFor, selected, onSelect, renderD
       <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
         <span className="flex items-center gap-1.5"><span className="size-3 rounded-sm border border-primary/60" /> Scheduled practice</span>
         <span className="flex items-center gap-1.5"><span className="size-3 rounded-sm border border-primary bg-accent" /> Game / tournament</span>
+        <span className="flex items-center gap-1.5"><span className="size-3 rounded-sm bg-primary/35" /> Attended</span>
         <span className="flex items-center gap-1.5"><span className="size-3 rounded-sm bg-primary" /> Logged activity</span>
       </div>
     </div>

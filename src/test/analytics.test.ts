@@ -187,3 +187,13 @@ describe("follow-up plan", () => {
     );
   });
 });
+
+import { ATTENDANCE as ATT, OBSERVATIONS as OBS, PLAYERS as PL } from "@/lib/data";
+describe("attendance", () => {
+  it("every player attended at least 10 sessions, including all observation dates", () => {
+    for (const p of PL) {
+      expect((ATT[p.id] ?? []).length).toBeGreaterThanOrEqual(10);
+      for (const o of OBS.filter((x) => x.playerId === p.id)) expect(ATT[p.id]).toContain(o.date);
+    }
+  });
+});

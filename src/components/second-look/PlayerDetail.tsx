@@ -7,7 +7,7 @@ import {
   primarySkill, skillEvidence, skillTotals, suggestionReason,
   type PeerComparisonResult, type ScheduleEvent, type SecondLookSuggestion,
 } from "@/lib/analytics";
-import { CONFIG, SKILL_KEYS, type CoachLog, type PlanDrill, type Player, type SkillKey } from "@/lib/data";
+import { ATTENDANCE, CONFIG, SKILL_KEYS, type CoachLog, type PlanDrill, type Player, type SkillKey } from "@/lib/data";
 import { PlayerAvatar, StatusBadge } from "./PlayerCard";
 import { SkillChart } from "./SkillChart";
 import { MonthCalendar, type CalendarDayInfo } from "./MonthCalendar";
@@ -81,6 +81,7 @@ export function PlayerDetail({
   const infoFor = (date: string): CalendarDayInfo => ({
     events: schedule.filter((e) => e.date === date),
     hasPlayerActivity: obs.some((o) => o.date === date) || playerLogs.some((l) => l.date === date),
+    attended: !!player && (ATTENDANCE[player.id] ?? []).includes(date),
   });
 
   const dayObs = day ? obs.filter((o) => o.date === day) : [];
@@ -207,6 +208,7 @@ export function PlayerDetail({
                       <div className="text-sm font-semibold">{formatDate(day, { weekday: "long", month: "long", day: "numeric" })}</div>
                       <Button size="sm" variant="secondary" onClick={() => onLogSession(day)}>Log session</Button>
                     </div>
+                    {player && (ATTENDANCE[player.id] ?? []).includes(day) && <p className="text-sm font-semibold text-primary">Attended this session</p>}
                     {dayEvents.length === 0 && <p className="text-sm text-muted-foreground">Nothing scheduled this day.</p>}
                     {dayEvents.map((e) => (
                       <p key={e.id} className="text-sm">
