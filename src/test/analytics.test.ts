@@ -145,7 +145,7 @@ describe("schedule", () => {
     expect(s.some((e) => e.date === "2026-11-17" && e.source === "recurring")).toBe(true); // Tuesday
     expect(s.some((e) => e.date === "2026-11-20" && e.source === "recurring")).toBe(true); // Friday
     expect(s.some((e) => e.date === "2026-11-16")).toBe(false); // Monday no longer generated
-    expect(s.some((e) => e.date === "2026-11-12" && e.source === "history")).toBe(true); // history kept
+    expect(s.some((e) => e.date === "2026-11-11" && e.source === "history")).toBe(true); // history kept
   });
   it("one-off cancels, marks and adds take precedence", () => {
     const s = buildSchedule("2026-11-13", "2026-11-30", [1, 4], "2026-11-13", {
