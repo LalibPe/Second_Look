@@ -1,5 +1,5 @@
 import {
-  CONFIG, OBSERVATIONS, PLAYERS, SESSIONS,
+  CONFIG, OBSERVATIONS, PLAYERS, SESSIONS, SKILL_KEYS,
   type CoachLog, type ObservationEntry, type PlanDrill, type Player, type Quarter,
   type SessionEvent, type SessionType, type SkillKey, type SkillStat,
 } from "./data";
@@ -112,6 +112,123 @@ export function assessmentSeries(playerId: string, logs: CoachLog[]): ChartPoint
 
 export function assessmentLabel(score: number): string {
   return CONFIG.assessmentScale[String(score)] ?? String(score);
+}
+
+// ---------- Second-look rule ----------
+
+export function median(values: number[]): number {
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 ? sorted[mid]! : (sorted[mid - 1]! + sorted[mid]!) / 2;
+}
+
+/** Role-relevant skills for a position (from app_config.json), falling back to all skills. */
+export function roleSkills(position: string): SkillKey[] {
+  return CONFIG.roleSkills[position] ?? SKILL_KEYS;
+}
+
+export interface PeerComparison {
+  skill: SkillKey;
+  playerAttempts: number;
+  peerAttempts: number[]; // anonymized totals behind the median
+  median: number;
+  peers: number;
+}
+
+export type PeerComparisonResult =
+  | { ok: true; comparison: PeerComparison }
+  | { ok: false; reason: string };
+
+const MIN_PEERS = 3;
+
+/**
+ * Compare one player's recorded attempts with peers of the same birth quarter and
+ * position, in the same session types, using only the historical tryout window
+ * (observations.json — coach logs from follow-up sessions never enter the benchmark).
+ * The player is excluded from their own benchmark.
+ */
+export function peerComparison(playerId: string, skill: SkillKey): PeerComparisonResult {
+  const player = playerById(playerId);
+  const quarter = birthQuarter(player.birthDate);
+  const sessionTypeById = new Map(SESSIONS.map((s) => [s.id, s.type]));
+
+  // Session types in which this player had the skill measured during tryouts.
+  const playerObs = OBSERVATIONS.filter((o) => o.playerId === playerId && o.skills[skill]);
+  const types = new Set(playerObs.map((o) => sessionTypeById.get(o.sessionId)));
+  const playerAttempts = playerObs.reduce((n, o) => n + o.skills[skill]!.attempts, 0);
+  if (playerAttempts === 0)
+    return { ok: false, reason: `No ${CONFIG.skills[skill].label.toLowerCase()} attempts recorded for ${player.name} in the tryout window.` };
+
+  const peerAttempts = PLAYERS.filter(
+    (p) => p.id !== playerId && p.position === player.position && birthQuarter(p.birthDate) === quarter,
+  ).map((p) =>
+    OBSERVATIONS.filter(
+      (o) => o.playerId === p.id && o.skills[skill] && types.has(sessionTypeById.get(o.sessionId)),
+    ).reduce((n, o) => n + o.skills[skill]!.attempts, 0),
+  ).filter((n) => n > 0);
+
+  if (peerAttempts.length < MIN_PEERS)
+    return {
+      ok: false,
+      reason: `Only ${peerAttempts.length} comparable peer${peerAttempts.length === 1 ? "" : "s"} (same quarter, position and session type) with recorded ${CONFIG.skills[skill].label.toLowerCase()} attempts — at least ${MIN_PEERS} are needed for a median.`,
+    };
+
+  return {
+    ok: true,
+    comparison: { skill, playerAttempts, peerAttempts, median: median(peerAttempts), peers: peerAttempts.length },
+  };
+}
+
+export interface SecondLookSuggestion extends PeerComparison {
+  thresholdPct: number;
+  cutoff: number; // thresholdPct% of the peer median
+}
+
+/**
+ * Automatic second-look suggestion: a player outside the tentative squad whose
+ * recorded attempts in a role-relevant skill fall below thresholdPct% of the peer
+ * median. A low success rate never triggers this rule. Returns null when the player
+ * is selected, has enough opportunities, or the comparison data is insufficient.
+ */
+export function secondLookSuggestion(player: Player, thresholdPct: number): SecondLookSuggestion | null {
+  if (player.provisional) return null;
+  let best: SecondLookSuggestion | null = null;
+  for (const skill of roleSkills(player.position)) {
+    const r = peerComparison(player.id, skill);
+    if (!r.ok) continue;
+    const c = r.comparison;
+    const cutoff = (thresholdPct / 100) * c.median;
+    if (c.playerAttempts < cutoff) {
+      const cand = { ...c, thresholdPct, cutoff };
+      if (!best || c.playerAttempts / c.median < best.playerAttempts / best.median) best = cand;
+    }
+  }
+  return best;
+}
+
+/** Human-readable reason for a suggestion, e.g. "13 serve receive attempts recorded. Median for 3 other Q4 liberos in these tryouts: 24." */
+export function suggestionReason(player: Player, s: SecondLookSuggestion): string {
+  const q = birthQuarter(player.birthDate);
+  return `${s.playerAttempts} ${CONFIG.skills[s.skill].label.toLowerCase()} attempts recorded. Median for ${s.peers} other Q${q} ${player.position.toLowerCase()}s in these tryouts: ${s.median}.`;
+}
+
+// ---------- Court time ----------
+
+/** Total attempts across all skills in one coach log. */
+export function logAttempts(log: CoachLog): number {
+  return Object.values(log.skills).reduce((n, s) => n + (s?.attempts ?? 0), 0);
+}
+
+/**
+ * Attempts per 60 minutes for a log, only when individual on-court minutes were
+ * recorded (> 0) and cover the same observations as the attempts. Whole-session
+ * duration is never a substitute; returns null when unavailable.
+ */
+export function attemptsPer60(log: CoachLog): number | null {
+  const minutes = log.minutes ?? 0;
+  const attempts = logAttempts(log);
+  if (minutes <= 0 || attempts === 0) return null;
+  return (attempts / minutes) * 60;
 }
 
 // ---------- Schedule ----------

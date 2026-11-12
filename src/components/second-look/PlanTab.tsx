@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Download, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,6 +11,9 @@ import { toast } from "sonner";
 interface Props {
   drills: PlanDrill[];
   onChange: (drills: PlanDrill[]) => void;
+  /** When set, opens that drill's editor (e.g. from a player profile). */
+  editRequest: string | null;
+  onEditRequestHandled: () => void;
 }
 
 function DrillEditor({
@@ -44,8 +47,15 @@ function DrillEditor({
   );
 }
 
-export function PlanTab({ drills, onChange }: Props) {
+export function PlanTab({ drills, onChange, editRequest, onEditRequestHandled }: Props) {
   const [editing, setEditing] = useState<string | null>(null); // `${playerId}:${skill}`
+
+  useEffect(() => {
+    if (editRequest) {
+      setEditing(editRequest);
+      onEditRequestHandled();
+    }
+  }, [editRequest, onEditRequestHandled]);
   const [playerId, setPlayerId] = useState(PLAYERS[0]!.id);
   const [skill, setSkill] = useState<SkillKey>("serveReceive");
   const [reps, setReps] = useState("15");

@@ -5,10 +5,12 @@ import { CONFIG, SEED_DRILLS, type CoachLog, type PlanDrill } from "./data";
 const KEY = "second-look-vb:v1";
 
 export interface AppState {
-  /** Coach-controlled "needs second look" flags, seeded from scheduled_drills.json. */
+  /** Manual "Coach flagged" marks — independent of the calculated suggestion and the plan. */
   secondLook: Record<string, boolean>;
   /** Visual emphasis only — never changes which cards are shown. */
   highlightSecondLooks: boolean;
+  /** Editable demo threshold (% of peer median attempts) for the automatic suggestion. */
+  thresholdPct: number;
   recurringDays: number[];
   recurringEffective: string; // date the recurring pattern takes effect
   exceptions: ScheduleException;
@@ -18,8 +20,9 @@ export interface AppState {
 
 export function defaultState(): AppState {
   return {
-    secondLook: Object.fromEntries(SEED_DRILLS.map((d) => [d.playerId, true])),
+    secondLook: {},
     highlightSecondLooks: true,
+    thresholdPct: CONFIG.secondLookThresholdPct,
     recurringDays: [...CONFIG.defaultPracticeDays],
     recurringEffective: nextDayIso(todayIso()),
     exceptions: { cancels: [], adds: [], marks: {} },
@@ -41,6 +44,7 @@ export function useAppState() {
         setState({
           secondLook: { ...base.secondLook, ...parsed.secondLook },
           highlightSecondLooks: parsed.highlightSecondLooks ?? base.highlightSecondLooks,
+          thresholdPct: typeof parsed.thresholdPct === "number" ? parsed.thresholdPct : base.thresholdPct,
           recurringDays: Array.isArray(parsed.recurringDays) ? parsed.recurringDays : base.recurringDays,
           recurringEffective: parsed.recurringEffective ?? base.recurringEffective,
           exceptions: { ...base.exceptions, ...parsed.exceptions },

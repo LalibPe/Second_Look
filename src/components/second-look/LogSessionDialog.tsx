@@ -16,6 +16,7 @@ interface DraftEntry {
   playerId: string;
   assessment: number | null;
   comment: string;
+  minutes: string; // optional on-court minutes, scrimmages/matches only
   skills: Partial<Record<SkillKey, { attempts: string; successes: string }>>;
 }
 
@@ -60,11 +61,12 @@ export function LogSessionDialog({ open, onOpenChange, initialDate, logs, onSave
             playerId: id,
             assessment: existing.assessment,
             comment: existing.comment,
+            minutes: existing.minutes ? String(existing.minutes) : "",
             skills: Object.fromEntries(
               Object.entries(existing.skills).map(([k, v]) => [k, { attempts: String(v!.attempts), successes: String(v!.successes) }]),
             ),
           }
-        : { playerId: id, assessment: null, comment: "", skills: {} };
+        : { playerId: id, assessment: null, comment: "", minutes: "", skills: {} };
     }
     setDrafts(next);
     setCursor(0);
@@ -87,6 +89,8 @@ export function LogSessionDialog({ open, onOpenChange, initialDate, logs, onSave
 
   const skillError = useMemo(() => {
     if (!draft) return null;
+    if (draft.minutes !== "" && (!/^\d+$/.test(draft.minutes) || Number(draft.minutes) <= 0))
+      return "Court minutes: enter a whole number greater than 0, or leave it empty.";
     for (const k of SKILL_KEYS) {
       const s = draft.skills[k];
       if (!s || (s.attempts === "" && s.successes === "")) continue;
@@ -108,7 +112,10 @@ export function LogSessionDialog({ open, onOpenChange, initialDate, logs, onSave
         const s = d.skills[k];
         if (s && s.attempts !== "" && s.successes !== "") skills[k] = { attempts: Number(s.attempts), successes: Number(s.successes) };
       }
-      return { playerId: id, date, sessionType, assessment: d.assessment, comment: d.comment.trim(), skills };
+      return {
+        playerId: id, date, sessionType, assessment: d.assessment, comment: d.comment.trim(), skills,
+        minutes: d.minutes === "" ? null : Number(d.minutes),
+      };
     });
     onSave([...kept, ...added]);
     toast.success(`Session saved for ${added.length} player${added.length === 1 ? "" : "s"}`);
@@ -187,6 +194,18 @@ export function LogSessionDialog({ open, onOpenChange, initialDate, logs, onSave
                 ))}
               </RadioGroup>
             </div>
+            {sessionType !== "practice" && (
+              <div>
+                <Label htmlFor="log-minutes">On-court minutes (optional)</Label>
+                <Input
+                  id="log-minutes" className="w-32" inputMode="numeric" placeholder="e.g. 25"
+                  value={draft.minutes} onChange={(e) => setDraft({ minutes: e.target.value })}
+                />
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Actual minutes this player was on court — never the whole-session duration. Enables attempts per 60.
+                </p>
+              </div>
+            )}
             <div>
               <Label htmlFor="log-comment">Comment</Label>
               <Textarea id="log-comment" rows={2} placeholder="What did you see?" value={draft.comment} onChange={(e) => setDraft({ comment: e.target.value })} />

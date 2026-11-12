@@ -10,7 +10,7 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription,
   AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { birthQuarter, buildSchedule, todayIso } from "@/lib/analytics";
+import { birthQuarter, buildSchedule, secondLookSuggestion, todayIso } from "@/lib/analytics";
 import { CONFIG, PLAYERS, type Quarter } from "@/lib/data";
 import { useAppState } from "@/lib/store";
 import { cn } from "@/lib/utils";
@@ -53,6 +53,13 @@ function Index() {
   const [openId, setOpenId] = useState<string | null>(null);
   const [logOpen, setLogOpen] = useState(false);
   const [logDate, setLogDate] = useState<string | null>(null);
+  const [planEditKey, setPlanEditKey] = useState<string | null>(null);
+
+  // Automatic suggestions come only from the peer-median rule; flags and drills never change them.
+  const suggestions = useMemo(
+    () => new Map(PLAYERS.map((p) => [p.id, secondLookSuggestion(p, state.thresholdPct)])),
+    [state.thresholdPct],
+  );
 
   const schedule = useMemo(() => {
     const end = new Date(todayIso() + "T00:00:00Z");
@@ -65,7 +72,7 @@ function Index() {
     if (q && !p.name.toLowerCase().includes(q) && !p.id.toLowerCase().includes(q)) return false;
     if (position !== "all" && p.position !== position) return false;
     if (quarter && birthQuarter(p.birthDate) !== quarter) return false;
-    if (secondLookOnly && !state.secondLook[p.id]) return false;
+    if (secondLookOnly && !suggestions.get(p.id) && !state.secondLook[p.id]) return false;
     return true;
   });
   const filtered = query || position !== "all" || quarter || secondLookOnly;
@@ -160,6 +167,18 @@ function Index() {
                   Second look only
                 </label>
                 <label className="flex items-center gap-2 text-sm font-medium">
+                  Suggestion threshold
+                  <Input
+                    type="number" min={1} max={100} className="w-20" aria-label="Suggestion threshold percent"
+                    value={state.thresholdPct}
+                    onChange={(e) => {
+                      const n = Number(e.target.value);
+                      if (Number.isFinite(n) && n >= 1 && n <= 100) setState((s) => ({ ...s, thresholdPct: n }));
+                    }}
+                  />
+                  %
+                </label>
+                <label className="flex items-center gap-2 text-sm font-medium">
                   <Checkbox
                     checked={state.highlightSecondLooks}
                     onCheckedChange={(c) => setState((s) => ({ ...s, highlightSecondLooks: c === true }))}
@@ -179,7 +198,10 @@ function Index() {
                     <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                       {g.players.map((p) => (
                         <PlayerCard key={p.id} player={p} logs={state.logs}
-                          secondLook={!!state.secondLook[p.id]} highlight={state.highlightSecondLooks}
+                          suggestion={suggestions.get(p.id) ?? null}
+                          flagged={!!state.secondLook[p.id]}
+                          followUpScheduled={state.drills.some((d) => d.playerId === p.id)}
+                          highlight={state.highlightSecondLooks}
                           onOpen={() => setOpenId(p.id)} />
                       ))}
                     </div>
@@ -191,9 +213,16 @@ function Index() {
             <section className="rounded-md border border-border bg-card p-5 text-sm">
               <h2 className="font-display text-lg font-semibold uppercase tracking-wide">About the method</h2>
               <p className="mt-1 text-muted-foreground">
-                The selection audit is descriptive: it shows how provisional picks distribute across birth quarters and is
-                a reason to review the trial, not proof of bias. Birth quarter gives age context and never determines who
-                gets a second look. Coach assessments are subjective 1–5 ratings, kept separate from measured skill rates.
+                A player outside the tentative squad is suggested for a second look when their recorded attempts in a
+                role-relevant skill fall below {state.thresholdPct}% of the peer median — compared only with players of
+                the same birth quarter, position and session type, in the same tryout window. A low success rate never
+                triggers the rule, and the coach makes the final decision.
+              </p>
+              <p className="mt-1 text-muted-foreground">
+                Birth quarter groups players by relative age within the selection year (January 1 cutoff). It does not
+                measure biological maturity and never adds points to a player's evaluation. The selection audit is
+                descriptive — a reason to review the trial, not proof of bias. Coach assessments are subjective 1–5
+                ratings, kept separate from measured skill rates.
               </p>
               <ul className="mt-2 list-disc space-y-1 pl-5">
                 <li>
@@ -212,7 +241,12 @@ function Index() {
         )}
 
         {tab === "plan" && (
-          <PlanTab drills={state.drills} onChange={(drills) => setState((s) => ({ ...s, drills }))} />
+          <PlanTab
+            drills={state.drills}
+            onChange={(drills) => setState((s) => ({ ...s, drills }))}
+            editRequest={planEditKey}
+            onEditRequestHandled={() => setPlanEditKey(null)}
+          />
         )}
       </main>
 
@@ -220,10 +254,17 @@ function Index() {
         player={openPlayer}
         logs={state.logs}
         schedule={schedule}
-        secondLook={openPlayer ? !!state.secondLook[openPlayer.id] : false}
-        onToggleSecondLook={(on) => openPlayer && setState((s) => ({ ...s, secondLook: { ...s.secondLook, [openPlayer.id]: on } }))}
+        drills={state.drills}
+        suggestion={openPlayer ? (suggestions.get(openPlayer.id) ?? null) : null}
+        flagged={openPlayer ? !!state.secondLook[openPlayer.id] : false}
+        onToggleFlagged={(on) => openPlayer && setState((s) => ({ ...s, secondLook: { ...s.secondLook, [openPlayer.id]: on } }))}
         onClose={() => setOpenId(null)}
         onLogSession={(d) => openLog(d)}
+        onEditDrill={(playerId, skill) => {
+          setOpenId(null);
+          setPlanEditKey(`${playerId}:${skill}`);
+          setTab("plan");
+        }}
       />
       <LogSessionDialog
         open={logOpen}

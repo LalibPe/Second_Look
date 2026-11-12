@@ -47,6 +47,8 @@ export interface CoachLog {
   assessment: number | null; // 1–5
   comment: string;
   skills: Partial<Record<SkillKey, SkillStat>>;
+  /** Actual on-court minutes (optional, scrimmages/matches only). Never derived from session duration. */
+  minutes?: number | null;
 }
 
 export interface PlanDrill {
@@ -66,6 +68,8 @@ export interface AppConfig {
   assessmentScale: Record<string, string>;
   defaultPracticeDays: number[]; // 0 = Sunday … 6 = Saturday
   demoCalendarStart: string; // YYYY-MM
+  secondLookThresholdPct: number; // editable demo threshold for the second-look rule
+  roleSkills: Record<string, SkillKey[]>; // role-relevant skills per position
 }
 
 export const CONFIG = configJson as AppConfig;

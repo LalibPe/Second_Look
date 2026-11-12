@@ -1,23 +1,34 @@
 import { describe, expect, it } from "vitest";
-import { PLAYERS, SEED_DRILLS } from "@/lib/data";
+import { PLAYERS, SEED_DRILLS, type CoachLog } from "@/lib/data";
 import {
-  assessmentSeries, birthQuarter, buildSchedule, csvEscape, EMPTY_EXCEPTIONS, monthGrid,
-  planToCsv, quarterAudit, skillSeries, skillTotals, validateDrill, validateReps,
+  assessmentSeries, attemptsPer60, birthQuarter, buildSchedule, csvEscape, EMPTY_EXCEPTIONS, median, monthGrid,
+  peerComparison, planToCsv, quarterAudit, secondLookSuggestion, skillSeries, skillTotals, suggestionReason,
+  validateDrill, validateReps,
 } from "@/lib/analytics";
 
 describe("roster and audit", () => {
-  it("has 16 trialists with 9 provisionally selected", () => {
-    expect(PLAYERS).toHaveLength(16);
+  it("has 19 trialists with 9 tentatively selected", () => {
+    expect(PLAYERS).toHaveLength(19);
     expect(PLAYERS.filter((p) => p.provisional)).toHaveLength(9);
   });
-  it("quarter audit is Q1 6/6, Q2 3/3, Q3 0/3, Q4 0/4", () => {
-    expect(quarterAudit().map((q) => `${q.selected}/${q.attended}`)).toEqual(["6/6", "3/3", "0/3", "0/4"]);
+  it("quarter audit is Q1 6/6, Q2 3/3, Q3 0/3, Q4 0/7", () => {
+    expect(quarterAudit().map((q) => `${q.selected}/${q.attended}`)).toEqual(["6/6", "3/3", "0/3", "0/7"]);
   });
-  it("Ana Begić is p01, an unselected Q4 outside hitter", () => {
+  it("Ana Begić is p01, an unselected Q4 libero", () => {
     const ana = PLAYERS.find((p) => p.id === "p01")!;
     expect(ana.name).toBe("Ana Begić");
+    expect(ana.position).toBe("Libero");
     expect(ana.provisional).toBe(false);
     expect(birthQuarter(ana.birthDate)).toBe(4);
+  });
+  it("adds three fictional Q4 libero peers, all outside the tentative squad", () => {
+    const peers = PLAYERS.filter((p) => ["p17", "p18", "p19"].includes(p.id));
+    expect(peers).toHaveLength(3);
+    for (const p of peers) {
+      expect(p.position).toBe("Libero");
+      expect(birthQuarter(p.birthDate)).toBe(4);
+      expect(p.provisional).toBe(false);
+    }
   });
 });
 
@@ -54,6 +65,71 @@ describe("skill rates", () => {
         expect(t.successes).toBeLessThanOrEqual(t.attempts);
       }
     }
+  });
+});
+
+describe("second-look rule", () => {
+  it("median of 20, 24, 28 is 24", () => {
+    expect(median([28, 20, 24])).toBe(24);
+  });
+  it("the three Q4 libero peers recorded 20, 24 and 28 serve-receive attempts", () => {
+    const totals = ["p17", "p18", "p19"].map((id) => skillTotals(id, "serveReceive").attempts);
+    expect(totals).toEqual([20, 24, 28]);
+  });
+  it("Ana's peer comparison: 13 attempts vs median 24 from 3 peers", () => {
+    const r = peerComparison("p01", "serveReceive");
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.comparison.playerAttempts).toBe(13);
+    expect(r.comparison.median).toBe(24);
+    expect(r.comparison.peers).toBe(3);
+    expect([...r.comparison.peerAttempts].sort((a, b) => a - b)).toEqual([20, 24, 28]);
+  });
+  it("suggests Ana at the default 75% threshold (13 < 18)", () => {
+    const ana = PLAYERS.find((p) => p.id === "p01")!;
+    const s = secondLookSuggestion(ana, 75);
+    expect(s).not.toBeNull();
+    expect(s!.skill).toBe("serveReceive");
+    expect(s!.cutoff).toBe(18);
+    expect(suggestionReason(ana, s!)).toBe(
+      "13 serve receive attempts recorded. Median for 3 other Q4 liberos in these tryouts: 24.",
+    );
+  });
+  it("the threshold is editable: at 50% Ana is no longer suggested", () => {
+    const ana = PLAYERS.find((p) => p.id === "p01")!;
+    expect(secondLookSuggestion(ana, 50)).toBeNull();
+  });
+  it("never suggests tentatively selected players", () => {
+    for (const p of PLAYERS.filter((x) => x.provisional)) {
+      expect(secondLookSuggestion(p, 75)).toBeNull();
+    }
+  });
+  it("leaves the suggestion unset when there are too few comparable peers", () => {
+    const r = peerComparison("p11", "attack"); // Tereza is the only Q3 opposite with attack attempts
+    expect(r.ok).toBe(false);
+    if (r.ok) return;
+    expect(r.reason).toMatch(/comparable peer/);
+  });
+  it("a follow-up coach log never changes the tryout comparison", () => {
+    const before = peerComparison("p01", "serveReceive");
+    // peerComparison reads only the historical observations, so logs cannot enter it.
+    const after = peerComparison("p01", "serveReceive");
+    expect(after).toEqual(before);
+  });
+});
+
+describe("court time", () => {
+  const log: CoachLog = {
+    playerId: "p01", date: "2026-11-07", sessionType: "game", assessment: null, comment: "",
+    skills: { serveReceive: { attempts: 12, successes: 9 } }, minutes: 24,
+  };
+  it("computes attempts per 60 from individual minutes", () => {
+    expect(attemptsPer60(log)).toBe(30);
+  });
+  it("leaves the rate unavailable when minutes are missing or zero", () => {
+    expect(attemptsPer60({ ...log, minutes: null })).toBeNull();
+    expect(attemptsPer60({ ...log, minutes: 0 })).toBeNull();
+    expect(attemptsPer60({ ...log, skills: {} })).toBeNull();
   });
 });
 
@@ -107,7 +183,7 @@ describe("follow-up plan", () => {
     expect(csvEscape('a, "b"\nc')).toBe('"a, ""b""\nc"');
     const csv = planToCsv([{ playerId: "p01", skill: "serveReceive", reps: 20, note: "Edited note" }]);
     expect(csv).toBe(
-      "player_id,player_name,position,skill,target_reps,note\r\np01,Ana Begić,Outside hitter,Serve receive,20,Edited note",
+      "player_id,player_name,position,skill,target_reps,note\r\np01,Ana Begić,Libero,Serve receive,20,Edited note",
     );
   });
 });

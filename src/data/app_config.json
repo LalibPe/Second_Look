@@ -22,5 +22,13 @@
     "5": "Consistently strong"
   },
   "defaultPracticeDays": [1, 4],
-  "demoCalendarStart": "2026-11"
+  "demoCalendarStart": "2026-11",
+  "secondLookThresholdPct": 75,
+  "roleSkills": {
+    "Libero": ["serveReceive"],
+    "Setter": ["serve", "serveReceive"],
+    "Outside hitter": ["attack", "serveReceive"],
+    "Opposite": ["attack", "serve"],
+    "Middle blocker": ["block", "attack"]
+  }
 }

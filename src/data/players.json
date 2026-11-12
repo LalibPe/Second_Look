@@ -1,6 +1,6 @@
 {
   "players": [
-    { "id": "p01", "name": "Ana Begić", "position": "Outside hitter", "birthDate": "2013-11-18", "provisional": false },
+    { "id": "p01", "name": "Ana Begić", "position": "Libero", "birthDate": "2013-11-18", "provisional": false },
     { "id": "p02", "name": "Maja Kovačević", "position": "Setter", "birthDate": "2013-01-14", "provisional": true },
     { "id": "p03", "name": "Sara Lindgren", "position": "Outside hitter", "birthDate": "2013-02-03", "provisional": true },
     { "id": "p04", "name": "Petra Novák", "position": "Middle blocker", "birthDate": "2013-03-22", "provisional": true },
@@ -15,6 +15,9 @@
     { "id": "p13", "name": "Kaja Novak", "position": "Outside hitter", "birthDate": "2013-09-14", "provisional": false },
     { "id": "p14", "name": "Ema Jovanović", "position": "Setter", "birthDate": "2013-10-06", "provisional": false },
     { "id": "p15", "name": "Freya Olsen", "position": "Middle blocker", "birthDate": "2013-12-04", "provisional": false },
-    { "id": "p16", "name": "Zara Ahmed", "position": "Opposite", "birthDate": "2013-10-29", "provisional": false }
+    { "id": "p16", "name": "Zara Ahmed", "position": "Opposite", "birthDate": "2013-10-29", "provisional": false },
+    { "id": "p17", "name": "Mila Petrović", "position": "Libero", "birthDate": "2013-10-21", "provisional": false },
+    { "id": "p18", "name": "Hanna Nowak", "position": "Libero", "birthDate": "2013-11-09", "provisional": false },
+    { "id": "p19", "name": "Sara Öztürk", "position": "Libero", "birthDate": "2013-12-15", "provisional": false }
   ]
 }

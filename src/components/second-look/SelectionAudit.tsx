@@ -26,7 +26,7 @@ export function SelectionAudit({ active, onSelect }: { active: Quarter | null; o
         </Tooltip>
       </div>
       <p className="mt-1 text-sm text-muted-foreground">
-        {selected} of {total} trialists are provisionally selected. Every provisional pick so far was born in the first
+        {selected} of {total} trialists are tentatively selected. Every tentative pick so far was born in the first
         half of the year — a pattern worth reviewing before final selection.
       </p>
       <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-4">

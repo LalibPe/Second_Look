@@ -49,6 +49,15 @@
 
     { "id": "p15-o1", "playerId": "p15", "sessionId": "s-2026-11-09", "date": "2026-11-09", "skills": { "block": { "attempts": 5, "successes": 2 } }, "note": "Youngest in the group; timing a step behind but works hard." },
 
-    { "id": "p16-o1", "playerId": "p16", "sessionId": "s-2026-11-12", "date": "2026-11-12", "skills": { "attack": { "attempts": 5, "successes": 3 }, "serve": { "attempts": 4, "successes": 2 } }, "note": "First real look today; aggressive serve, fearless at the net." }
+    { "id": "p16-o1", "playerId": "p16", "sessionId": "s-2026-11-12", "date": "2026-11-12", "skills": { "attack": { "attempts": 5, "successes": 3 }, "serve": { "attempts": 4, "successes": 2 } }, "note": "First real look today; aggressive serve, fearless at the net." },
+
+    { "id": "p17-o1", "playerId": "p17", "sessionId": "s-2026-11-05", "date": "2026-11-05", "skills": { "serveReceive": { "attempts": 10, "successes": 7 } }, "note": "Took a full share of reception drills; steady platform under pace." },
+    { "id": "p17-o2", "playerId": "p17", "sessionId": "s-2026-11-08", "date": "2026-11-08", "skills": { "serveReceive": { "attempts": 10, "successes": 7 } }, "note": "Repeated the full reception rotation; communicative in the back row." },
+
+    { "id": "p18-o1", "playerId": "p18", "sessionId": "s-2026-11-05", "date": "2026-11-05", "skills": { "serveReceive": { "attempts": 12, "successes": 9 } }, "note": "Heavy reception load in both drills; handled jump serves well." },
+    { "id": "p18-o2", "playerId": "p18", "sessionId": "s-2026-11-08", "date": "2026-11-08", "skills": { "serveReceive": { "attempts": 12, "successes": 8 } }, "note": "Again took every rotation; the most-tested passer of the day." },
+
+    { "id": "p19-o1", "playerId": "p19", "sessionId": "s-2026-11-05", "date": "2026-11-05", "skills": { "serveReceive": { "attempts": 14, "successes": 10 } }, "note": "Long look in reception; covered half the court in serve-receive drills." },
+    { "id": "p19-o2", "playerId": "p19", "sessionId": "s-2026-11-08", "date": "2026-11-08", "skills": { "serveReceive": { "attempts": 14, "successes": 11 } }, "note": "Coaches kept her in for every reception rep; reliable throughout." }
   ]
 }
