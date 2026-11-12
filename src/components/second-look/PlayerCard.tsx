@@ -30,7 +30,7 @@ export function PlayerAvatar({ player, className, textClass }: { player: Player;
   return (
     <img
       ref={ref}
-      src={`/players/${player.id}.webp?v=1`}
+      src={`/players/${player.id}.webp?v=2`}
       alt={`Illustrated portrait of ${player.name}`}
       onError={() => setFailed(true)}
       className={cn("shrink-0 rounded-full bg-accent object-cover", className)}
