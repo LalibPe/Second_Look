@@ -69,7 +69,7 @@ export function PlayerCard({
   return (
     <article
       className={cn(
-        "flex flex-col rounded-md border bg-card p-4",
+        "flex flex-col rounded-md border bg-card p-4 transition-all duration-200 ease-out hover:-translate-y-1 hover:shadow-lg",
         highlight && needsLook ? "border-primary ring-1 ring-primary" : "border-border",
       )}
     >
