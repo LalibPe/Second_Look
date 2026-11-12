@@ -33,7 +33,7 @@ export function PlayerAvatar({ player, className, textClass }: { player: Player;
       src={`/players/${player.id}.webp?v=1`}
       alt={`Illustrated portrait of ${player.name}`}
       onError={() => setFailed(true)}
-      className={cn("shrink-0 border border-primary/40 bg-accent object-cover", className)}
+      className={cn("shrink-0 rounded-full bg-accent object-cover", className)}
     />
   );
 }
