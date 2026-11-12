@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
-import { nextDayIso, todayIso, type ScheduleException } from "./analytics";
+import { type ScheduleException } from "./analytics";
 import { CONFIG, SEED_DRILLS, type CoachLog, type PlanDrill } from "./data";
 
-const KEY = "second-look-vb:v2";
+const KEY = "second-look-vb:v3";
 
 export interface AppState {
   /** Manual "Coach flagged" marks — independent of the calculated suggestion and the plan. */
@@ -24,7 +24,7 @@ export function defaultState(): AppState {
     highlightSecondLooks: true,
     thresholdPct: CONFIG.secondLookThresholdPct,
     recurringDays: [...CONFIG.defaultPracticeDays],
-    recurringEffective: nextDayIso(todayIso()),
+    recurringEffective: `${CONFIG.demoCalendarStart}-01`,
     exceptions: { cancels: [], adds: [], marks: {} },
     logs: [],
     drills: SEED_DRILLS.map((d) => ({ ...d })),
