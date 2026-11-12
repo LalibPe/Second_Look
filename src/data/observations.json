@@ -1,0 +1,54 @@
+{
+  "observations": [
+    { "id": "p01-o1", "playerId": "p01", "sessionId": "s-2026-10-14", "date": "2026-10-14", "skills": { "serveReceive": { "attempts": 8, "successes": 6 } }, "note": "Brief look in the extra session; steady platform, called the ball early." },
+    { "id": "p01-o2", "playerId": "p01", "sessionId": "s-2026-10-28", "date": "2026-10-28", "skills": { "serveReceive": { "attempts": 5, "successes": 3 } }, "note": "Short spell again; moved feet to the ball, two tough serves handled well." },
+
+    { "id": "p02-o1", "playerId": "p02", "sessionId": "s-2026-10-05", "date": "2026-10-05", "skills": { "serveReceive": { "attempts": 10, "successes": 8 }, "serve": { "attempts": 12, "successes": 10 } }, "note": "Clean hands, consistent ball to target." },
+    { "id": "p02-o2", "playerId": "p02", "sessionId": "s-2026-10-10", "date": "2026-10-10", "skills": { "serve": { "attempts": 8, "successes": 7 } }, "note": "Ran the offence calmly in the practice match." },
+    { "id": "p02-o3", "playerId": "p02", "sessionId": "s-2026-10-19", "date": "2026-10-19", "skills": { "serveReceive": { "attempts": 9, "successes": 7 }, "serve": { "attempts": 10, "successes": 9 } }, "note": "Good tempo choice with the middles." },
+    { "id": "p02-o4", "playerId": "p02", "sessionId": "s-2026-11-02", "date": "2026-11-02", "skills": { "serve": { "attempts": 12, "successes": 11 } }, "note": "Best setter on the day; decision-making stood out." },
+
+    { "id": "p03-o1", "playerId": "p03", "sessionId": "s-2026-10-01", "date": "2026-10-01", "skills": { "attack": { "attempts": 14, "successes": 8 }, "serveReceive": { "attempts": 11, "successes": 8 } }, "note": "Swings with purpose, hits line and cross." },
+    { "id": "p03-o2", "playerId": "p03", "sessionId": "s-2026-10-17", "date": "2026-10-17", "skills": { "attack": { "attempts": 16, "successes": 10 }, "serveReceive": { "attempts": 12, "successes": 9 } }, "note": "Carried the outside load in the match." },
+    { "id": "p03-o3", "playerId": "p03", "sessionId": "s-2026-10-29", "date": "2026-10-29", "skills": { "attack": { "attempts": 12, "successes": 8 }, "serve": { "attempts": 10, "successes": 8 } }, "note": "Added a float serve with real pace." },
+
+    { "id": "p04-o1", "playerId": "p04", "sessionId": "s-2026-10-08", "date": "2026-10-08", "skills": { "block": { "attempts": 12, "successes": 6 }, "attack": { "attempts": 10, "successes": 6 } }, "note": "Reads the setter early, closes the block well." },
+    { "id": "p04-o2", "playerId": "p04", "sessionId": "s-2026-10-22", "date": "2026-10-22", "skills": { "block": { "attempts": 14, "successes": 8 }, "attack": { "attempts": 9, "successes": 6 } }, "note": "Quick first step on the slide attack." },
+    { "id": "p04-o3", "playerId": "p04", "sessionId": "s-2026-11-05", "date": "2026-11-05", "skills": { "block": { "attempts": 11, "successes": 7 } }, "note": "Two stuff blocks in transition drills." },
+
+    { "id": "p05-o1", "playerId": "p05", "sessionId": "s-2026-10-05", "date": "2026-10-05", "skills": { "attack": { "attempts": 15, "successes": 9 }, "serve": { "attempts": 10, "successes": 7 } }, "note": "Big arm from the right side." },
+    { "id": "p05-o2", "playerId": "p05", "sessionId": "s-2026-10-17", "date": "2026-10-17", "skills": { "attack": { "attempts": 13, "successes": 8 }, "block": { "attempts": 8, "successes": 4 } }, "note": "Scored in bunches during the match." },
+    { "id": "p05-o3", "playerId": "p05", "sessionId": "s-2026-10-31", "date": "2026-10-31", "skills": { "attack": { "attempts": 18, "successes": 11 } }, "note": "Best scorer at the tournament." },
+
+    { "id": "p06-o1", "playerId": "p06", "sessionId": "s-2026-10-01", "date": "2026-10-01", "skills": { "serveReceive": { "attempts": 14, "successes": 11 } }, "note": "Calm in reception, covers a lot of court." },
+    { "id": "p06-o2", "playerId": "p06", "sessionId": "s-2026-10-15", "date": "2026-10-15", "skills": { "serveReceive": { "attempts": 13, "successes": 10 } }, "note": "Organises the passing lanes vocally." },
+    { "id": "p06-o3", "playerId": "p06", "sessionId": "s-2026-11-02", "date": "2026-11-02", "skills": { "serveReceive": { "attempts": 12, "successes": 10 } }, "note": "Most reliable passer in the group." },
+
+    { "id": "p07-o1", "playerId": "p07", "sessionId": "s-2026-10-08", "date": "2026-10-08", "skills": { "block": { "attempts": 10, "successes": 5 }, "attack": { "attempts": 8, "successes": 5 } }, "note": "Long reach, timing still developing." },
+    { "id": "p07-o2", "playerId": "p07", "sessionId": "s-2026-10-26", "date": "2026-10-26", "skills": { "block": { "attempts": 12, "successes": 7 }, "serve": { "attempts": 9, "successes": 6 } }, "note": "Much better penetration over the net." },
+
+    { "id": "p08-o1", "playerId": "p08", "sessionId": "s-2026-10-12", "date": "2026-10-12", "skills": { "attack": { "attempts": 12, "successes": 7 }, "serveReceive": { "attempts": 10, "successes": 7 } }, "note": "High contact point, hits over the block." },
+    { "id": "p08-o2", "playerId": "p08", "sessionId": "s-2026-10-31", "date": "2026-10-31", "skills": { "attack": { "attempts": 15, "successes": 9 }, "serve": { "attempts": 8, "successes": 6 } }, "note": "Strong tournament, scored on big points." },
+    { "id": "p08-o3", "playerId": "p08", "sessionId": "s-2026-11-09", "date": "2026-11-09", "skills": { "serveReceive": { "attempts": 11, "successes": 8 } }, "note": "Passing has come on since October." },
+
+    { "id": "p09-o1", "playerId": "p09", "sessionId": "s-2026-10-12", "date": "2026-10-12", "skills": { "serve": { "attempts": 11, "successes": 9 }, "serveReceive": { "attempts": 8, "successes": 6 } }, "note": "Deceptive setter, good disguise on the dump." },
+    { "id": "p09-o2", "playerId": "p09", "sessionId": "s-2026-10-26", "date": "2026-10-26", "skills": { "serve": { "attempts": 10, "successes": 8 } }, "note": "Ran a fast tempo offence confidently." },
+    { "id": "p09-o3", "playerId": "p09", "sessionId": "s-2026-11-05", "date": "2026-11-05", "skills": { "serveReceive": { "attempts": 9, "successes": 7 }, "serve": { "attempts": 10, "successes": 8 } }, "note": "Leadership improving every session." },
+
+    { "id": "p10-o1", "playerId": "p10", "sessionId": "s-2026-10-15", "date": "2026-10-15", "skills": { "block": { "attempts": 13, "successes": 7 }, "attack": { "attempts": 10, "successes": 6 } }, "note": "Quick off the floor, good first tempo." },
+    { "id": "p10-o2", "playerId": "p10", "sessionId": "s-2026-10-31", "date": "2026-10-31", "skills": { "block": { "attempts": 12, "successes": 8 } }, "note": "Dominated the net in the tournament final." },
+
+    { "id": "p11-o1", "playerId": "p11", "sessionId": "s-2026-10-19", "date": "2026-10-19", "skills": { "attack": { "attempts": 7, "successes": 4 } }, "note": "Only a short look; powerful approach, raw shot selection." },
+    { "id": "p11-o2", "playerId": "p11", "sessionId": "s-2026-11-07", "date": "2026-11-07", "skills": { "attack": { "attempts": 6, "successes": 4 }, "serve": { "attempts": 4, "successes": 3 } }, "note": "Came on late in the match and scored twice." },
+
+    { "id": "p12-o1", "playerId": "p12", "sessionId": "s-2026-10-22", "date": "2026-10-22", "skills": { "serveReceive": { "attempts": 8, "successes": 5 } }, "note": "Quick feet, platform angle inconsistent." },
+
+    { "id": "p13-o1", "playerId": "p13", "sessionId": "s-2026-10-29", "date": "2026-10-29", "skills": { "attack": { "attempts": 6, "successes": 3 }, "serveReceive": { "attempts": 5, "successes": 3 } }, "note": "Athletic but late to the ball in reception." },
+
+    { "id": "p14-o1", "playerId": "p14", "sessionId": "s-2026-11-05", "date": "2026-11-05", "skills": { "serve": { "attempts": 6, "successes": 4 } }, "note": "Brief look; soft hands, needs to see more of her setting range." },
+
+    { "id": "p15-o1", "playerId": "p15", "sessionId": "s-2026-11-09", "date": "2026-11-09", "skills": { "block": { "attempts": 5, "successes": 2 } }, "note": "Youngest in the group; timing a step behind but works hard." },
+
+    { "id": "p16-o1", "playerId": "p16", "sessionId": "s-2026-11-12", "date": "2026-11-12", "skills": { "attack": { "attempts": 5, "successes": 3 }, "serve": { "attempts": 4, "successes": 2 } }, "note": "First real look today; aggressive serve, fearless at the net." }
+  ]
+}

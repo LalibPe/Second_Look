@@ -1,0 +1,20 @@
+{
+  "players": [
+    { "id": "p01", "name": "Ana Begić", "position": "Outside hitter", "birthDate": "2013-11-18", "provisional": false },
+    { "id": "p02", "name": "Maja Kovačević", "position": "Setter", "birthDate": "2013-01-14", "provisional": true },
+    { "id": "p03", "name": "Sara Lindgren", "position": "Outside hitter", "birthDate": "2013-02-03", "provisional": true },
+    { "id": "p04", "name": "Petra Novák", "position": "Middle blocker", "birthDate": "2013-03-22", "provisional": true },
+    { "id": "p05", "name": "Elif Yılmaz", "position": "Opposite", "birthDate": "2013-01-27", "provisional": true },
+    { "id": "p06", "name": "Clara Dubois", "position": "Libero", "birthDate": "2013-02-19", "provisional": true },
+    { "id": "p07", "name": "Ivana Marić", "position": "Middle blocker", "birthDate": "2013-03-30", "provisional": true },
+    { "id": "p08", "name": "Nora Hansen", "position": "Outside hitter", "birthDate": "2013-04-09", "provisional": true },
+    { "id": "p09", "name": "Lena Fischer", "position": "Setter", "birthDate": "2013-05-25", "provisional": true },
+    { "id": "p10", "name": "Sofia Rossi", "position": "Middle blocker", "birthDate": "2013-06-11", "provisional": true },
+    { "id": "p11", "name": "Tereza Horáková", "position": "Opposite", "birthDate": "2013-07-19", "provisional": false },
+    { "id": "p12", "name": "Amira Diallo", "position": "Libero", "birthDate": "2013-08-02", "provisional": false },
+    { "id": "p13", "name": "Kaja Novak", "position": "Outside hitter", "birthDate": "2013-09-14", "provisional": false },
+    { "id": "p14", "name": "Ema Jovanović", "position": "Setter", "birthDate": "2013-10-06", "provisional": false },
+    { "id": "p15", "name": "Freya Olsen", "position": "Middle blocker", "birthDate": "2013-12-04", "provisional": false },
+    { "id": "p16", "name": "Zara Ahmed", "position": "Opposite", "birthDate": "2013-10-29", "provisional": false }
+  ]
+}

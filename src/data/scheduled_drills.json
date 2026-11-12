@@ -1,0 +1,7 @@
+{
+  "drills": [
+    { "playerId": "p01", "skill": "serveReceive", "reps": 15, "note": "Serve receive to target under pressure" },
+    { "playerId": "p11", "skill": "attack", "reps": 12, "note": "Attack shot selection from the right side" },
+    { "playerId": "p14", "skill": "serve", "reps": 10, "note": "Setting range and serve consistency" }
+  ]
+}

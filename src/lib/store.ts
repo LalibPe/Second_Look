@@ -1,16 +1,35 @@
 import { useCallback, useEffect, useState } from "react";
-import { DEFAULT_THRESHOLDS, type PlanItem, type Thresholds } from "./analytics";
+import { nextDayIso, todayIso, type ScheduleException } from "./analytics";
+import { CONFIG, SEED_DRILLS, type CoachLog, type PlanDrill } from "./data";
 
-const KEY = "second-look:v1";
+const KEY = "second-look-vb:v1";
+
 export interface AppState {
-  plan: PlanItem[];
-  budget: number;
-  thresholds: Thresholds;
+  /** Coach-controlled "needs second look" flags, seeded from scheduled_drills.json. */
+  secondLook: Record<string, boolean>;
+  /** Visual emphasis only — never changes which cards are shown. */
+  highlightSecondLooks: boolean;
+  recurringDays: number[];
+  recurringEffective: string; // date the recurring pattern takes effect
+  exceptions: ScheduleException;
+  logs: CoachLog[];
+  drills: PlanDrill[];
 }
-export const DEFAULT_STATE: AppState = { plan: [], budget: 30, thresholds: DEFAULT_THRESHOLDS };
+
+export function defaultState(): AppState {
+  return {
+    secondLook: Object.fromEntries(SEED_DRILLS.map((d) => [d.playerId, true])),
+    highlightSecondLooks: true,
+    recurringDays: [...CONFIG.defaultPracticeDays],
+    recurringEffective: nextDayIso(todayIso()),
+    exceptions: { cancels: [], adds: [], marks: {} },
+    logs: [],
+    drills: SEED_DRILLS.map((d) => ({ ...d })),
+  };
+}
 
 export function useAppState() {
-  const [state, setState] = useState<AppState>(DEFAULT_STATE);
+  const [state, setState] = useState<AppState>(defaultState);
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
@@ -18,10 +37,15 @@ export function useAppState() {
       const raw = localStorage.getItem(KEY);
       if (raw) {
         const parsed = JSON.parse(raw) as Partial<AppState>;
+        const base = defaultState();
         setState({
-          plan: Array.isArray(parsed.plan) ? parsed.plan : [],
-          budget: typeof parsed.budget === "number" ? parsed.budget : 30,
-          thresholds: { ...DEFAULT_THRESHOLDS, ...parsed.thresholds },
+          secondLook: { ...base.secondLook, ...parsed.secondLook },
+          highlightSecondLooks: parsed.highlightSecondLooks ?? base.highlightSecondLooks,
+          recurringDays: Array.isArray(parsed.recurringDays) ? parsed.recurringDays : base.recurringDays,
+          recurringEffective: parsed.recurringEffective ?? base.recurringEffective,
+          exceptions: { ...base.exceptions, ...parsed.exceptions },
+          logs: Array.isArray(parsed.logs) ? parsed.logs : [],
+          drills: Array.isArray(parsed.drills) ? parsed.drills : base.drills,
         });
       }
     } catch {
@@ -36,7 +60,7 @@ export function useAppState() {
 
   const reset = useCallback(() => {
     localStorage.removeItem(KEY);
-    setState(DEFAULT_STATE);
+    setState(defaultState());
   }, []);
 
   return { state, setState, reset, hydrated };

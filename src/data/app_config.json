@@ -1,0 +1,26 @@
+{
+  "sport": "volleyball",
+  "syntheticDataNotice": "All players, sessions and observations in this demo are synthetic.",
+  "selectionYearCutoff": "January 1",
+  "positions": ["Setter", "Outside hitter", "Opposite", "Middle blocker", "Libero"],
+  "skills": {
+    "serveReceive": { "label": "Serve receive", "unit": "to target" },
+    "attack": { "label": "Attack", "unit": "kills" },
+    "block": { "label": "Block touches or kills", "unit": "touches or kills" },
+    "serve": { "label": "Serve", "unit": "in" }
+  },
+  "sessionTypes": {
+    "practice": "Practice",
+    "game": "Game",
+    "tournament": "Tournament"
+  },
+  "assessmentScale": {
+    "1": "Needs work",
+    "2": "Below expectations",
+    "3": "Meets expectations",
+    "4": "Above expectations",
+    "5": "Consistently strong"
+  },
+  "defaultPracticeDays": [1, 4],
+  "demoCalendarStart": "2026-11"
+}

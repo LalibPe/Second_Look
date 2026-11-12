@@ -1,0 +1,23 @@
+{
+  "sessions": [
+    { "id": "s-2026-10-01", "date": "2026-10-01", "time": "17:30", "type": "practice", "title": "Tryout practice" },
+    { "id": "s-2026-10-05", "date": "2026-10-05", "time": "17:30", "type": "practice", "title": "Tryout practice" },
+    { "id": "s-2026-10-08", "date": "2026-10-08", "time": "17:30", "type": "practice", "title": "Tryout practice" },
+    { "id": "s-2026-10-10", "date": "2026-10-10", "time": "10:00", "type": "game", "title": "Practice match vs RK Omladinac" },
+    { "id": "s-2026-10-12", "date": "2026-10-12", "time": "17:30", "type": "practice", "title": "Tryout practice" },
+    { "id": "s-2026-10-14", "date": "2026-10-14", "time": "17:30", "type": "practice", "title": "Extra skills session" },
+    { "id": "s-2026-10-15", "date": "2026-10-15", "time": "17:30", "type": "practice", "title": "Tryout practice" },
+    { "id": "s-2026-10-17", "date": "2026-10-17", "time": "10:00", "type": "game", "title": "Practice match vs OK Bosna" },
+    { "id": "s-2026-10-19", "date": "2026-10-19", "time": "17:30", "type": "practice", "title": "Tryout practice" },
+    { "id": "s-2026-10-22", "date": "2026-10-22", "time": "17:30", "type": "practice", "title": "Tryout practice" },
+    { "id": "s-2026-10-26", "date": "2026-10-26", "time": "17:30", "type": "practice", "title": "Tryout practice" },
+    { "id": "s-2026-10-28", "date": "2026-10-28", "time": "17:30", "type": "practice", "title": "Extra skills session" },
+    { "id": "s-2026-10-29", "date": "2026-10-29", "time": "17:30", "type": "practice", "title": "Tryout practice" },
+    { "id": "s-2026-10-31", "date": "2026-10-31", "time": "10:00", "type": "tournament", "title": "Autumn youth tournament" },
+    { "id": "s-2026-11-02", "date": "2026-11-02", "time": "17:30", "type": "practice", "title": "Tryout practice" },
+    { "id": "s-2026-11-05", "date": "2026-11-05", "time": "17:30", "type": "practice", "title": "Tryout practice" },
+    { "id": "s-2026-11-07", "date": "2026-11-07", "time": "10:00", "type": "game", "title": "Practice match vs ŽOK Sparta" },
+    { "id": "s-2026-11-09", "date": "2026-11-09", "time": "17:30", "type": "practice", "title": "Tryout practice" },
+    { "id": "s-2026-11-12", "date": "2026-11-12", "time": "17:30", "type": "practice", "title": "Tryout practice" }
+  ]
+}

@@ -1,100 +1,144 @@
 import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
 import {
-  formatDate, peerComparison, RATING_KEYS, RATING_LABELS, reviewStatus, type PlanItem, type PlayerSummary, type Thresholds,
+  assessmentLabel, birthQuarter, formatDate, observationsFor, primarySkill, skillEvidence, skillTotals,
+  type ScheduleEvent,
 } from "@/lib/analytics";
-import { cn } from "@/lib/utils";
-import { initials, QuarterBadge, RatingBlock, StatusBadge } from "./PlayerCard";
-import { ProgressChart } from "./ProgressChart";
-import { ObservationCalendar } from "./ObservationCalendar";
-import { AddToPlan } from "./PlanControls";
+import { CONFIG, SKILL_KEYS, type CoachLog, type Player } from "@/lib/data";
+import { initials, StatusBadge } from "./PlayerCard";
+import { SkillChart } from "./SkillChart";
+import { MonthCalendar, type CalendarDayInfo } from "./MonthCalendar";
 
 interface Props {
-  s: PlayerSummary | null;
+  player: Player | null;
+  logs: CoachLog[];
+  schedule: ScheduleEvent[];
+  secondLook: boolean;
+  onToggleSecondLook: (on: boolean) => void;
   onClose: () => void;
-  thresholds: Thresholds;
-  plan: PlanItem[];
-  budget: number;
-  onAdd: (i: PlanItem) => void;
-  onRemove: (id: string) => void;
+  onLogSession: (date: string) => void;
 }
 
-export function PlayerDetail({ s, onClose, thresholds, plan, budget, onAdd, onRemove }: Props) {
+export function PlayerDetail({ player, logs, schedule, secondLook, onToggleSecondLook, onClose, onLogSession }: Props) {
   const [day, setDay] = useState<string | null>(null);
-  useEffect(() => setDay(null), [s?.player.id]);
-  const status = s ? reviewStatus(s, thresholds) : null;
+  useEffect(() => setDay(null), [player?.id]);
+
+  const obs = player ? observationsFor(player.id) : [];
+  const playerLogs = player ? logs.filter((l) => l.playerId === player.id) : [];
+
+  const infoFor = (date: string): CalendarDayInfo => ({
+    events: schedule.filter((e) => e.date === date),
+    hasPlayerActivity: obs.some((o) => o.date === date) || playerLogs.some((l) => l.date === date),
+  });
+
+  const dayObs = day ? obs.filter((o) => o.date === day) : [];
+  const dayLogs = day ? playerLogs.filter((l) => l.date === day) : [];
+  const dayEvents = day ? schedule.filter((e) => e.date === day) : [];
 
   return (
-    <Dialog open={!!s} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="h-[100dvh] max-h-[100dvh] w-full max-w-none overflow-y-auto rounded-none border-border bg-background p-4 sm:h-auto sm:max-h-[92vh] sm:max-w-5xl sm:rounded-2xl sm:p-6">
-        {s && status && (
+    <Dialog open={!!player} onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="h-[100dvh] max-h-[100dvh] w-full max-w-none overflow-y-auto rounded-none border-border bg-background p-4 sm:h-auto sm:max-h-[92vh] sm:max-w-5xl sm:rounded-md sm:p-6">
+        {player && (
           <div className="space-y-5">
-            <div className={cn("rounded-2xl border border-border p-5", s.player.provisional ? "bg-player-card-selected" : "bg-player-card")}>
+            <div className="rounded-md border border-border bg-card p-5">
               <div className="flex flex-wrap items-center gap-4">
-                <div className="flex size-20 items-center justify-center rounded-full border-2 border-primary/60 bg-secondary font-display text-3xl font-bold">
-                  {initials(s.player.name)}
+                <div className="flex size-16 items-center justify-center rounded-full border border-primary/40 bg-accent font-display text-2xl font-bold text-accent-foreground">
+                  {initials(player.name)}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <DialogTitle className="font-display text-3xl font-bold uppercase tracking-wide">{s.player.name}</DialogTitle>
+                  <DialogTitle className="font-display text-3xl font-semibold uppercase tracking-wide">{player.name}</DialogTitle>
                   <DialogDescription className="text-muted-foreground">
-                    {s.player.id} · {s.player.position} · born {formatDate(s.player.birthDate, { month: "long", year: "numeric" })}
+                    {player.position} · born {formatDate(player.birthDate, { month: "long", year: "numeric" })} · birth quarter Q{birthQuarter(player.birthDate)}
                   </DialogDescription>
-                  <div className="mt-2 flex flex-wrap gap-2"><QuarterBadge q={s.quarter} /><StatusBadge selected={s.player.provisional} /></div>
-                </div>
-                <div className="flex gap-6 text-center">
-                  <div><div className="font-display text-4xl font-bold tabular" data-testid="detail-minutes">{s.totalMinutes}</div><div className="text-xs text-muted-foreground">min observed</div></div>
-                  <div><div className="font-display text-4xl font-bold tabular" data-testid="detail-days">{s.observationDays}</div><div className="text-xs text-muted-foreground">obs. days</div></div>
-                  <div><div className="font-display text-4xl font-bold tabular">{s.mean?.toFixed(1) ?? "—"}</div><div className="text-xs text-muted-foreground">mean /10</div></div>
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                    <StatusBadge selected={player.provisional} />
+                    <label className="flex items-center gap-2 text-sm font-medium">
+                      <Checkbox
+                        checked={secondLook}
+                        onCheckedChange={(c) => onToggleSecondLook(c === true)}
+                        aria-label="Needs second look"
+                      />
+                      Needs second look
+                    </label>
+                  </div>
                 </div>
               </div>
-              <p className="mt-4 text-[11px] uppercase tracking-widest text-muted-foreground">Coach assessments · latest /10</p>
-              <div className="mt-1"><RatingBlock s={s} large /></div>
-              {status.suggested && (
-                <p className="mt-3 rounded-lg bg-primary/15 px-3 py-2 text-sm font-medium text-primary">Suggested for review · {status.reason}</p>
-              )}
-            </div>
-
-            <AddToPlan key={s.player.id} playerId={s.player.id} plan={plan} budget={budget} onAdd={onAdd} onRemove={onRemove} />
-
-            <div className="grid gap-4 lg:grid-cols-2">
-              <ProgressChart observations={s.observations} highlightDate={day} />
-              <ObservationCalendar observations={s.observations} selected={day} onSelect={setDay} />
-            </div>
-
-            <section className="rounded-2xl border border-border bg-card p-4">
-              <h3 className="font-display text-lg font-semibold uppercase tracking-wide">Peer context</h3>
-              <p className="text-sm text-muted-foreground">
-                Descriptive only: latest assessments of other Q{s.quarter} {s.player.group} trialists.
-              </p>
-              <div className="mt-3 grid gap-2 sm:grid-cols-3">
-                {RATING_KEYS.map((k) => {
-                  const pc = peerComparison(s, k);
+              <div className="mt-4 grid gap-2 sm:grid-cols-4">
+                {SKILL_KEYS.map((k) => {
+                  const t = skillTotals(player.id, k, logs);
                   return (
-                    <div key={k} className="rounded-xl bg-secondary p-3 text-sm">
-                      <div className="font-semibold">{RATING_LABELS[k]}</div>
-                      {pc.sufficient ? (
-                        <div className="tabular">Player {s.latest[k] ?? "—"} · peer median {pc.median} (range {pc.min}–{pc.max}) · {pc.count} peers</div>
+                    <div key={k} className="rounded-sm border border-border bg-background px-3 py-2 text-sm">
+                      <div className="font-semibold">{CONFIG.skills[k].label}</div>
+                      {t.attempts > 0 ? (
+                        <div className="tabular">{t.successes} of {t.attempts} {CONFIG.skills[k].unit} · {t.pct!.toFixed(1)}%</div>
                       ) : (
-                        <div className="text-muted-foreground">Insufficient comparable observations ({pc.count} peer{pc.count === 1 ? "" : "s"}, need 3)</div>
+                        <div className="text-muted-foreground">Not recorded</div>
                       )}
                     </div>
                   );
                 })}
               </div>
-            </section>
+              {primarySkill(player.id, logs) && (
+                <p className="mt-3 text-sm text-muted-foreground">
+                  Strongest evidence: {skillEvidence(player.id, primarySkill(player.id, logs)!, logs)}
+                </p>
+              )}
+            </div>
 
-            <section className="rounded-2xl border border-border bg-card p-4">
-              <h3 className="font-display text-lg font-semibold uppercase tracking-wide">Observation history</h3>
-              <ul className="mt-2 divide-y divide-border">
-                {[...s.observations].reverse().map((o) => (
-                  <li key={o.id} className="py-2 text-sm">
-                    <span className="font-semibold">{formatDate(o.date, { weekday: "short", month: "short", day: "numeric" })} {o.time}</span>
-                    <span className="text-muted-foreground"> · {o.sessionType} · {o.minutes} min</span>
-                    <p>“{o.note}”</p>
-                  </li>
-                ))}
-              </ul>
-            </section>
+            <div className="grid gap-4 lg:grid-cols-2">
+              <SkillChart playerId={player.id} logs={logs} highlightDate={day} />
+              <section className="rounded-md border border-border bg-card p-4">
+                <h3 className="font-display text-lg font-semibold uppercase tracking-wide">Session calendar</h3>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Filled squares are days with saved activity for {player.name.split(" ")[0]}. Click a date for details.
+                </p>
+                <div className="mt-3">
+                  <MonthCalendar startMonth={CONFIG.demoCalendarStart} infoFor={infoFor} selected={day} onSelect={(d) => setDay(day === d ? null : d)} />
+                </div>
+                {day && (
+                  <div className="mt-4 space-y-3 border-t border-border pt-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="text-sm font-semibold">{formatDate(day, { weekday: "long", month: "long", day: "numeric" })}</div>
+                      <Button size="sm" variant="secondary" onClick={() => onLogSession(day)}>Log session</Button>
+                    </div>
+                    {dayEvents.length === 0 && <p className="text-sm text-muted-foreground">Nothing scheduled this day.</p>}
+                    {dayEvents.map((e) => (
+                      <p key={e.id} className="text-sm">
+                        <b>{CONFIG.sessionTypes[e.type]}</b> · {e.time} · {e.title}
+                        {e.cancelled && <span className="text-destructive"> · cancelled</span>}
+                      </p>
+                    ))}
+                    {dayObs.map((o) => (
+                      <div key={o.id} className="rounded-sm bg-secondary p-3 text-sm">
+                        <div className="font-semibold">Measured skills</div>
+                        {SKILL_KEYS.filter((k) => o.skills[k]).map((k) => (
+                          <div key={k} className="tabular">
+                            {CONFIG.skills[k].label}: {o.skills[k]!.successes} of {o.skills[k]!.attempts} {CONFIG.skills[k].unit}
+                          </div>
+                        ))}
+                        <p className="mt-1 italic text-muted-foreground">“{o.note}”</p>
+                      </div>
+                    ))}
+                    {dayLogs.map((l) => (
+                      <div key={`${l.playerId}-${l.date}`} className="rounded-sm bg-secondary p-3 text-sm">
+                        <div className="font-semibold">
+                          Coach log · {CONFIG.sessionTypes[l.sessionType]}
+                          {l.assessment !== null && ` · ${l.assessment}/5 ${assessmentLabel(l.assessment)}`}
+                        </div>
+                        {SKILL_KEYS.filter((k) => l.skills[k]).map((k) => (
+                          <div key={k} className="tabular">
+                            {CONFIG.skills[k].label}: {l.skills[k]!.successes} of {l.skills[k]!.attempts} {CONFIG.skills[k].unit}
+                          </div>
+                        ))}
+                        {l.comment && <p className="mt-1 italic text-muted-foreground">“{l.comment}”</p>}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </section>
+            </div>
           </div>
         )}
       </DialogContent>
