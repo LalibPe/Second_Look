@@ -1,29 +1,27 @@
-# Welcome to your Lovable project
+# Second Look
 
-This project was built with [Lovable](https://lovable.dev).
+Helps a youth football coach answer: **“Who have we seen too little of to make a confident decision?”**
 
-## Build with Lovable
-
-Open your project in the [Lovable editor](https://lovable.dev) and keep building.
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: connect the project to GitHub and every change made in Lovable is committed straight to your repository.
-- **Full ownership**: this code is yours. Push to your repository and your changes sync back into Lovable, ready for your next prompt.
-
-## Development
-
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
-
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
-npm run dev
+## Setup
+```
+bun install
+bun run dev      # http://localhost:8080
+bunx vitest run  # calculation tests
 ```
 
-## Built with
+## Review rule
+A player is suggested for review when all hold:
+- outside the provisional squad
+- mean(latest passing, latest first touch, latest decision-making) **≥** rating threshold (default 7/10)
+- total observed minutes **<** minute threshold (default 20)
 
-- TanStack Start
-- TypeScript
-- React
-- Tailwind CSS
+All three assessments must be recorded. Birth quarter never affects eligibility. Thresholds, the plan and the observation-minute budget persist in localStorage.
+
+## Synthetic data
+All 16 players and their observations are fictional, fixed and bundled in `src/lib/demo-data.ts`. Birth quarters use a January 1 cutoff.
+
+## Limitations
+- Coach assessments are subjective; thresholds are demonstration rules, not validated cut-offs.
+- Birth quarter shows relative age, not biological maturity.
+- Peer comparison requires 3+ peers in the same quarter and position group, so it is often unavailable with this small dataset.
+- No backend: data is local to the browser.

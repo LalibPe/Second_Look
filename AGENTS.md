@@ -28,3 +28,7 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Project rules
+- All card totals, charts, calendars and review suggestions derive from the bundled observation records via `src/lib/analytics.ts`; keep calculations there (tested in `src/test/analytics.test.ts`).
+- Client-only app: user state (plan, budget, thresholds) lives in localStorage via `src/lib/store.ts`; no backend.
