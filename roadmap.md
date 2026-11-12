@@ -7,4 +7,4 @@
 - [x] Profile: peer comparison panel (attempts vs median, outcome separate, anonymized peer counts), drill editing from profile
 - [x] Minutes: optional on-court minutes for games/tournaments, attempts per 60, never session duration
 - [x] Tests updated (rule, threshold, minutes, audit), README formula/threshold/synthetic-data sections
-- [ ] Browser verification of the six-step demo flow
+- [x] Browser verification of the six-step demo flow
