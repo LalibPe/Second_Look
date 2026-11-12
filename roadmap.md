@@ -8,3 +8,6 @@
 - [x] Minutes: optional on-court minutes for games/tournaments, attempts per 60, never session duration
 - [x] Tests updated (rule, threshold, minutes, audit), README formula/threshold/synthetic-data sections
 - [x] Browser verification of the six-step demo flow
+
+## Open
+- [x] Add portraits p17-p19

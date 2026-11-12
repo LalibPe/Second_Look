@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { formatDate, monthGrid, type ScheduleEvent } from "@/lib/analytics";
 import { CONFIG } from "@/lib/data";
 import { cn } from "@/lib/utils";
@@ -11,6 +12,7 @@ export interface CalendarDayInfo {
   events: ScheduleEvent[]; // scheduled sessions that day (may be empty)
   hasPlayerActivity: boolean; // player has a saved log or measured observation that day
   attended?: boolean; // player was present at a session that day
+  activityLines?: string[]; // hover summary of that day's logged data (skills, comment, …)
 }
 
 interface Props {
@@ -39,6 +41,7 @@ export function MonthCalendar({ startMonth, infoFor, selected, onSelect, renderD
   });
 
   return (
+    <TooltipProvider delayDuration={150}>
     <div>
       <div className="flex items-center justify-between">
         <Button size="icon" variant="ghost" aria-label="Previous month" onClick={() => shift(-1)}>
@@ -64,13 +67,13 @@ export function MonthCalendar({ startMonth, infoFor, selected, onSelect, renderD
             `${formatDate(date, { weekday: "long", month: "long", day: "numeric" })}` +
               (active.length ? ` · ${active.map((e) => CONFIG.sessionTypes[e.type]).join(", ")}` : " · nothing scheduled") +
               (info.hasPlayerActivity ? " · has logged activity" : info.attended ? " · attended" : "");
-          return (
+          const dayButton = (
             <button
               key={date}
               aria-label={label}
               onClick={() => onSelect(date)}
               className={cn(
-                "relative flex aspect-square flex-col items-center justify-center rounded-sm border text-sm tabular transition-colors",
+                "relative flex aspect-square w-full flex-col items-center justify-center rounded-sm border text-sm tabular transition-colors",
                 info.hasPlayerActivity
                   ? "border-primary bg-primary text-primary-foreground"
                   : info.attended
@@ -87,6 +90,15 @@ export function MonthCalendar({ startMonth, infoFor, selected, onSelect, renderD
               {isGame && <span className="mt-0.5 size-1.5 rounded-full bg-current" aria-hidden />}
             </button>
           );
+          if (!info.activityLines?.length) return dayButton;
+          return (
+            <Tooltip key={date}>
+              <TooltipTrigger asChild>{dayButton}</TooltipTrigger>
+              <TooltipContent side="top" className="max-w-64 whitespace-pre-line text-left">
+                {info.activityLines.join("\n")}
+              </TooltipContent>
+            </Tooltip>
+          );
         })}
       </div>
       <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
@@ -96,5 +108,6 @@ export function MonthCalendar({ startMonth, infoFor, selected, onSelect, renderD
         <span className="flex items-center gap-1.5"><span className="size-3 rounded-sm bg-primary" /> Logged activity</span>
       </div>
     </div>
+    </TooltipProvider>
   );
 }

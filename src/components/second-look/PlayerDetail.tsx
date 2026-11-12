@@ -78,10 +78,32 @@ export function PlayerDetail({
     ? SKILL_KEYS.filter((k) => skillTotals(player.id, k).attempts > 0)
     : [];
 
+  const activityLinesFor = (date: string): string[] => {
+    const lines: string[] = [];
+    for (const o of obs.filter((o) => o.date === date)) {
+      for (const k of SKILL_KEYS.filter((k) => o.skills[k])) {
+        lines.push(`${CONFIG.skills[k].label}: ${o.skills[k]!.successes} of ${o.skills[k]!.attempts} ${CONFIG.skills[k].unit}`);
+      }
+      if (o.note) lines.push(`“${o.note}”`);
+    }
+    for (const l of playerLogs.filter((l) => l.date === date)) {
+      let head = `Coach log · ${CONFIG.sessionTypes[l.sessionType]}`;
+      if (l.assessment !== null) head += ` · ${l.assessment}/5 ${assessmentLabel(l.assessment)}`;
+      lines.push(head);
+      for (const k of SKILL_KEYS.filter((k) => l.skills[k])) {
+        lines.push(`${CONFIG.skills[k].label}: ${l.skills[k]!.successes} of ${l.skills[k]!.attempts} ${CONFIG.skills[k].unit}`);
+      }
+      if ((l.minutes ?? 0) > 0) lines.push(`Court time: ${l.minutes} min`);
+      if (l.comment) lines.push(`“${l.comment}”`);
+    }
+    return lines;
+  };
+
   const infoFor = (date: string): CalendarDayInfo => ({
     events: schedule.filter((e) => e.date === date),
     hasPlayerActivity: obs.some((o) => o.date === date) || playerLogs.some((l) => l.date === date),
     attended: !!player && (ATTENDANCE[player.id] ?? []).includes(date),
+    activityLines: activityLinesFor(date),
   });
 
   const dayObs = day ? obs.filter((o) => o.date === day) : [];
