@@ -13,7 +13,7 @@
     { "id": "p11", "name": "Tereza Horáková", "position": "Opposite", "birthDate": "2013-07-19", "provisional": false },
     { "id": "p12", "name": "Amira Diallo", "position": "Libero", "birthDate": "2013-08-02", "provisional": false },
     { "id": "p13", "name": "Kaja Novak", "position": "Outside hitter", "birthDate": "2013-09-14", "provisional": false },
-    { "id": "p14", "name": "Ema Jovanović", "position": "Setter", "birthDate": "2013-10-06", "provisional": false },
+    { "id": "p14", "name": "Ema Jovanović", "position": "Outside hitter", "birthDate": "2013-10-06", "provisional": false },
     { "id": "p15", "name": "Freya Olsen", "position": "Middle blocker", "birthDate": "2013-12-04", "provisional": false },
     { "id": "p16", "name": "Zara Ahmed", "position": "Opposite", "birthDate": "2013-10-29", "provisional": false },
     { "id": "p17", "name": "Mila Petrović", "position": "Libero", "birthDate": "2013-10-21", "provisional": false },
